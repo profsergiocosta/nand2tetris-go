@@ -15,3 +15,10 @@ x
 mul
 pop
 y
+push
+x
+push
+y
+add
+pop
+w

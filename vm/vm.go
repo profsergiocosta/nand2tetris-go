@@ -61,7 +61,9 @@ func (vm *VM) Run() {
 
 		}
 		vm.pc++
+		fmt.Print("Stack:")
 		fmt.Println(vm.stack)
+		fmt.Print("Symbol table:")
 		fmt.Println(vm.st)
 	}
 }

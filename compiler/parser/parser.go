@@ -8,6 +8,8 @@ import (
 	"nand2tetris-go/compiler/token"
 	"nand2tetris-go/vm"
 	"os"
+	"path"
+	"strings"
 )
 
 type Parser struct {
@@ -125,7 +127,9 @@ func Interpret(path string) {
 	vm.Run()
 }
 
-//https://replit.com/@sergio_costa/HonoredSaneTrialsoftware#main.go
+func FilenameWithoutExtension(fn string) string {
+	return strings.TrimSuffix(fn, path.Ext(fn))
+}
 
 func Compile(path string) {
 	input, err := ioutil.ReadFile(path)
@@ -134,9 +138,8 @@ func Compile(path string) {
 	}
 	p := New(string(input))
 	p.ParseStatements()
-	vm := vm.New(p.instructions)
 
-	f, _ := os.Create(path + ".vm")
+	f, _ := os.Create(FilenameWithoutExtension(path) + ".vm")
 
 	w := bufio.NewWriter(f)
 
@@ -145,6 +148,4 @@ func Compile(path string) {
 	}
 	w.Flush()
 	f.Close()
-
-	vm.Run()
 }
