@@ -87,14 +87,11 @@ func (l *Lexer) peekChar() byte {
 }
 
 func (l *Lexer) nextChar() byte {
-	if l.position >= len(l.input) {
-		return 0
-	} else {
-		ch := l.input[l.position]
+	ch := l.peekChar()
+	if ch != 0 {
 		l.position++
-		return ch
 	}
-
+	return ch
 }
 
 func (l *Lexer) skipWhitespace() {
