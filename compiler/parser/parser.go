@@ -24,7 +24,7 @@ func (p *Parser) nextToken() {
 	p.curToken = p.lexer.NextToken()
 }
 
-func (p *Parser) expect(t token.TokenType) {
+func (p *Parser) match(t token.TokenType) {
 	if p.curToken.Type == t {
 		p.nextToken()
 	} else {
@@ -33,12 +33,20 @@ func (p *Parser) expect(t token.TokenType) {
 	}
 }
 
+func (p *Parser) parseExpression() {
+	p.parseTerm()
+	for p.curToken.Type == token.ASTERISK || p.curToken.Type == token.PLUS {
+		p.nextToken()
+		p.parseTerm()
+	}
+}
+
 func (p *Parser) parseTerm() {
 	switch p.curToken.Type {
 	case token.IDENT:
-		p.expect(token.IDENT)
+		p.match(token.IDENT)
 	case token.INT:
-		p.expect(token.INT)
+		p.match(token.INT)
 	default:
 		{
 			fmt.Println("erro sintático")
@@ -46,4 +54,12 @@ func (p *Parser) parseTerm() {
 		}
 	}
 
+}
+
+func (p *Parser) parseLetStatement() {
+	p.match(token.LET)
+	p.match(token.IDENT)
+	p.match(token.EQ)
+	p.parseExpression()
+	p.match(token.SEMICOLON)
 }
