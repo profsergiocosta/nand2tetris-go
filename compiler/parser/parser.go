@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"nand2tetris-go/compiler/lexer"
 	"nand2tetris-go/compiler/token"
-	"nand2tetris-go/compiler/vm"
+	"nand2tetris-go/vm"
 	"os"
 )
 

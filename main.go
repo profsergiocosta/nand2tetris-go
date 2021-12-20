@@ -1,7 +1,7 @@
 package main
 
 import (
-	"nand2tetris-go/compiler/vm"
+	"nand2tetris-go/vm"
 	"os"
 )
 
