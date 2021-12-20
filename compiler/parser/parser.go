@@ -10,12 +10,14 @@ import (
 type Parser struct {
 	lexer    *lexer.Lexer
 	curToken token.Token
+
+	instructions []string
 }
 
 func New(input string) *Parser {
 
 	lexer := lexer.New(input)
-	p := &Parser{lexer: lexer}
+	p := &Parser{lexer: lexer, instructions: nil}
 	p.nextToken()
 	return p
 }
@@ -36,16 +38,20 @@ func (p *Parser) match(t token.TokenType) {
 func (p *Parser) parseExpression() {
 	p.parseTerm()
 	for p.curToken.Type == token.ASTERISK || p.curToken.Type == token.PLUS {
+		op := p.curToken
 		p.nextToken()
 		p.parseTerm()
+		p.EmmitExpression(op)
 	}
 }
 
 func (p *Parser) parseTerm() {
 	switch p.curToken.Type {
 	case token.IDENT:
+		p.EmmitExpression(p.curToken)
 		p.match(token.IDENT)
 	case token.INT:
+		p.EmmitExpression(p.curToken)
 		p.match(token.INT)
 	default:
 		{
@@ -62,4 +68,40 @@ func (p *Parser) parseLetStatement() {
 	p.match(token.EQ)
 	p.parseExpression()
 	p.match(token.SEMICOLON)
+}
+
+func (p *Parser) EmmitExpression(tk token.Token) {
+	switch tk.Type {
+	case token.INT, token.IDENT:
+		p.instructions = append(p.instructions, "push")
+		p.instructions = append(p.instructions, tk.Lexeme)
+	case token.ASTERISK:
+		p.instructions = append(p.instructions, "mul")
+	case token.PLUS:
+		p.instructions = append(p.instructions, "add")
+
+	}
+}
+
+func (p *Parser) EmmitAssign(tk token.Token) {
+	p.instructions = append(p.instructions, "pop")
+	p.instructions = append(p.instructions, tk.Lexeme)
+}
+
+func (p *Parser) Disassembly() {
+
+	for i, inst := range p.instructions {
+		switch inst {
+		case "push", "pop":
+			fmt.Printf("(%d)\t%s\t", i, inst)
+		case "add", "mul":
+			fmt.Printf("(%d)\t%s\t\n", i, inst)
+		default:
+			fmt.Println(inst)
+		}
+	}
+}
+
+func (p *Parser) Compile() {
+	p.parseLetStatement()
 }
