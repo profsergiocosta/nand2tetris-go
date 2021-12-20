@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"io/ioutil"
 	"nand2tetris-go/compiler/lexer"
 	"nand2tetris-go/compiler/token"
 	"nand2tetris-go/compiler/vm"
@@ -64,7 +65,7 @@ func (p *Parser) parseTerm() {
 
 }
 
-func (p *Parser) parseStatements() {
+func (p *Parser) ParseStatements() {
 	for p.curToken.Type != token.EOF {
 		p.parseLetStatement()
 	}
@@ -112,8 +113,13 @@ func (p *Parser) Disassembly() {
 	}
 }
 
-func (p *Parser) Compile() {
-	p.parseStatements()
+func Interpret(path string) {
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic("erro")
+	}
+	p := New(string(input))
+	p.ParseStatements()
 	vm := vm.New(p.instructions)
 	vm.Run()
 }
