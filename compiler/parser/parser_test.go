@@ -17,7 +17,21 @@ func TestParseTerm(t *testing.T) {
 			t.Fatalf("não encontado fim de arquivo")
 		}
 	}
+}
+func TestParseLetStatement(t *testing.T) {
 
+	tests := []string{"let a = 56 * 8 + 9;"}
+
+	for _, tt := range tests {
+		p := New(tt)
+		p.parseLetStatement()
+		tk := p.curToken
+		if tk.Type != token.EOF {
+			t.Fatalf("não encontado fim de arquivo")
+		}
+	}
+
+}
 }
 
 func TestParseExpression(t *testing.T) {
