@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"nand2tetris-go/compiler/lexer"
@@ -121,5 +122,29 @@ func Interpret(path string) {
 	p := New(string(input))
 	p.ParseStatements()
 	vm := vm.New(p.instructions)
+	vm.Run()
+}
+
+//https://replit.com/@sergio_costa/HonoredSaneTrialsoftware#main.go
+
+func Compile(path string) {
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic("erro")
+	}
+	p := New(string(input))
+	p.ParseStatements()
+	vm := vm.New(p.instructions)
+
+	f, _ := os.Create(path + ".vm")
+
+	w := bufio.NewWriter(f)
+
+	for _, inst := range p.instructions {
+		w.WriteString(fmt.Sprintf("%s\n", inst))
+	}
+	w.Flush()
+	f.Close()
+
 	vm.Run()
 }

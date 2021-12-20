@@ -2,7 +2,9 @@ package vm
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strconv"
+	"strings"
 )
 
 type VM struct {
@@ -15,6 +17,13 @@ type VM struct {
 func New(inst []string) *VM {
 
 	return &VM{pc: 0, stack: nil, st: make(map[string]int), instructions: inst}
+}
+
+func Interpret(path string) {
+	dat, _ := ioutil.ReadFile(path)
+	instructions := strings.Split(string(dat), "\n")
+	vm := New(instructions)
+	vm.Run()
 }
 
 func (vm *VM) Run() {

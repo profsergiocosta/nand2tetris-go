@@ -1,0 +1,17 @@
+push
+10
+push
+5
+add
+push
+4
+mul
+pop
+x
+push
+2
+push
+x
+mul
+pop
+y
