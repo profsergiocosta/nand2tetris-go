@@ -1,9 +1,22 @@
 package main
 
-import "nand2tetris-go/compiler/parser"
+import (
+	"fmt"
+	"io/ioutil"
+	"nand2tetris-go/compiler/parser"
+	"os"
+)
 
 func main() {
-	p := parser.New("let x = 10 * y + 80;")
+
+	path := os.Args[1]
+
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic("erro")
+	}
+	fmt.Println(string(input))
+	p := parser.New(string(input))
 	p.Compile()
 	p.Disassembly()
 }

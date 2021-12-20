@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"nand2tetris-go/compiler/token"
 )
 
@@ -39,6 +40,7 @@ func (l *Lexer) NextToken() token.Token {
 		} else if token.IsLetter(ch) {
 			return l.readIdentifier()
 		} else {
+			fmt.Println(ch)
 			return token.Token{Type: token.ILLEGAL, Lexeme: string(l.nextChar())}
 		}
 
@@ -95,8 +97,9 @@ func (l *Lexer) nextChar() byte {
 }
 
 func (l *Lexer) skipWhitespace() {
-	switch l.peekChar() {
-	case ' ', '\t', '\n', '\r':
+	ch := l.peekChar()
+	for ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
 		l.nextChar()
+		ch = l.peekChar()
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"nand2tetris-go/compiler/lexer"
 	"nand2tetris-go/compiler/token"
+	"nand2tetris-go/compiler/vm"
 	"os"
 )
 
@@ -31,6 +32,7 @@ func (p *Parser) match(t token.TokenType) {
 		p.nextToken()
 	} else {
 		fmt.Println("erro sintático")
+		fmt.Println(p.curToken)
 		os.Exit(1)
 	}
 }
@@ -62,12 +64,20 @@ func (p *Parser) parseTerm() {
 
 }
 
+func (p *Parser) parseStatements() {
+	for p.curToken.Type != token.EOF {
+		p.parseLetStatement()
+	}
+}
+
 func (p *Parser) parseLetStatement() {
 	p.match(token.LET)
+	ident := p.curToken
 	p.match(token.IDENT)
 	p.match(token.EQ)
 	p.parseExpression()
 	p.match(token.SEMICOLON)
+	p.EmmitAssign(ident)
 }
 
 func (p *Parser) EmmitExpression(tk token.Token) {
@@ -103,5 +113,7 @@ func (p *Parser) Disassembly() {
 }
 
 func (p *Parser) Compile() {
-	p.parseLetStatement()
+	p.parseStatements()
+	vm := vm.New(p.instructions)
+	vm.Run()
 }
