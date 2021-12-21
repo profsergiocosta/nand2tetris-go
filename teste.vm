@@ -24,6 +24,9 @@ pop
 w
 push
 x
+push
+45
+add
 print
 push
 y

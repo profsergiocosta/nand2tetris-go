@@ -1,6 +1,6 @@
 let x = 10 + 5 * 4; 
 let y = 2 * x;
 let w = x + y;
-print x;
+print x + 45;
 print y;
 print w;

@@ -26,6 +26,17 @@ func Interpret(path string) {
 	vm.Run()
 }
 
+func (vm *VM) stackPop() int {
+	sp := len(vm.stack)
+	value := vm.stack[sp-1]
+	vm.stack = vm.stack[:sp-1]
+	return value
+}
+
+func (vm *VM) stackPush(value int) {
+	vm.stack = append(vm.stack, value)
+}
+
 func (vm *VM) Run() {
 	for vm.pc < len(vm.instructions) {
 		inst := vm.instructions[vm.pc]
@@ -33,38 +44,28 @@ func (vm *VM) Run() {
 		case "push":
 			nextInst := vm.instructions[vm.pc+1]
 			arg, err := strconv.Atoi(nextInst)
-			if err != nil {
+			if err != nil { // é uma variavel
 				arg = vm.st[nextInst]
 			}
-			vm.stack = append(vm.stack, arg)
+			vm.stackPush(arg)
 			vm.pc++
+
 		case "add", "mul":
-			sp := len(vm.stack)
-			arg1 := vm.stack[sp-1]
-			arg2 := vm.stack[sp-2]
-			var res int
+			arg1 := vm.stackPop()
+			arg2 := vm.stackPop()
 			if inst == "add" {
-				res = arg1 + arg2
+				vm.stackPush(arg1 + arg2)
 			} else {
-				res = arg1 * arg2
+				vm.stackPush(arg1 * arg2)
 			}
-			vm.stack = vm.stack[:sp-2]
-			vm.stack = append(vm.stack, res)
 
 		case "pop":
-			arg1 := vm.instructions[vm.pc+1]
-			sp := len(vm.stack)
-			arg2 := vm.stack[sp-1]
-			vm.st[arg1] = arg2
-			vm.stack = vm.stack[:sp-1]
+			arg := vm.instructions[vm.pc+1]
+			vm.st[arg] = vm.stackPop()
 			vm.pc++
 
 		case "print":
-			sp := len(vm.stack)
-			arg1 := vm.stack[sp-1]
-			fmt.Println(arg1)
-			vm.stack = vm.stack[:sp-1]
-
+			fmt.Println(vm.stackPop())
 		}
 		vm.pc++
 		/*
