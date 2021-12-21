@@ -15,7 +15,8 @@ func main() {
 	if ext == ".jack" {
 		parser.Compile(fileName)
 	} else {
-		vm.Interpret(fileName)
+		//vm.Interpret(fileName)
+		vm.Translator(fileName)
 	}
 
 }

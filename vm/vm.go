@@ -29,7 +29,7 @@ func Interpret(path string) {
 func writePush(value string) {
 	arg, err := strconv.Atoi(value)
 	if err != nil { // é uma variavel
-		fmt.Println(fmt.Sprintf("@%s", value))
+		fmt.Println("@" + value)
 		fmt.Println("D=M")
 		fmt.Println("@SP")
 		fmt.Println("A=M")
@@ -48,10 +48,43 @@ func writePush(value string) {
 
 }
 
+func writeAdd() {
+	fmt.Println("@SP // add")
+	fmt.Println("AM=M-1")
+	fmt.Println("D=M")
+	fmt.Println("A=A-1")
+	fmt.Println("M=D+M")
+
+}
+
+func writePop(varname string) {
+	fmt.Println("@SP")
+	fmt.Println("M=M-1")
+	fmt.Println("A=M")
+	fmt.Println("D=M")
+	fmt.Println("@" + varname)
+	fmt.Println("M=D")
+}
+
+func writeInit() {
+	fmt.Println("@SP")
+	fmt.Println("@256")
+	fmt.Println("D=A")
+	fmt.Println("@SP")
+	fmt.Println("M=D")
+}
+
+func writeHalt() {
+	fmt.Println("(LOOP)")
+	fmt.Println("@LOOP")
+	fmt.Println("0;JMP")
+}
+
 func Translator(path string) {
 	dat, _ := ioutil.ReadFile(path)
 	instructions := strings.Split(string(dat), "\n")
 	vm := New(instructions)
+	writeInit()
 	for vm.pc < len(vm.instructions) {
 		inst := vm.instructions[vm.pc]
 		switch inst {
@@ -61,30 +94,23 @@ func Translator(path string) {
 			vm.pc++
 
 		case "add", "mul":
-			arg1 := vm.stackPop()
-			arg2 := vm.stackPop()
 			if inst == "add" {
-				vm.stackPush(arg1 + arg2)
+				writeAdd()
 			} else {
-				vm.stackPush(arg1 * arg2)
+				// não tem implementacao
 			}
 
 		case "pop":
 			arg := vm.instructions[vm.pc+1]
-			vm.st[arg] = vm.stackPop()
+			writePop(arg)
 			vm.pc++
 
 		case "print":
-			fmt.Println(vm.stackPop())
+			//
 		}
 		vm.pc++
-		/*
-			fmt.Print("Stack:")
-			fmt.Println(vm.stack)
-			fmt.Print("Symbol table:")
-			fmt.Println(vm.st)
-		*/
 	}
+	writeHalt()
 }
 
 func (vm *VM) stackPop() int {
