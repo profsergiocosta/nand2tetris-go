@@ -70,8 +70,20 @@ func (p *Parser) parseTerm() {
 
 func (p *Parser) ParseStatements() {
 	for p.curToken.Type != token.EOF {
-		p.parseLetStatement()
+		if p.curToken.Type == token.LET {
+			p.parseLetStatement()
+		} else if p.curToken.Type == token.PRINT {
+			p.parsePrintStatement()
+		}
+
 	}
+}
+
+func (p *Parser) parsePrintStatement() {
+	p.match(token.PRINT)
+	p.parseExpression()
+	p.match(token.SEMICOLON)
+	p.EmmitPrint()
 }
 
 func (p *Parser) parseLetStatement() {
@@ -100,6 +112,10 @@ func (p *Parser) EmmitExpression(tk token.Token) {
 func (p *Parser) EmmitAssign(tk token.Token) {
 	p.instructions = append(p.instructions, "pop")
 	p.instructions = append(p.instructions, tk.Lexeme)
+}
+
+func (p *Parser) EmmitPrint() {
+	p.instructions = append(p.instructions, "print")
 }
 
 func (p *Parser) Disassembly() {

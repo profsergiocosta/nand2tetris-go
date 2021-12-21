@@ -73,6 +73,8 @@ func (l *Lexer) readIdentifier() token.Token {
 	lexeme := l.input[position:l.position]
 	if lexeme == "let" {
 		tok.Type = token.LET
+	} else if lexeme == "print" {
+		tok.Type = token.PRINT
 	} else {
 		tok.Type = token.IDENT
 	}

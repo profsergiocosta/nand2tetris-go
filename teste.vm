@@ -22,3 +22,12 @@ y
 add
 pop
 w
+push
+x
+print
+push
+y
+print
+push
+w
+print

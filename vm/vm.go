@@ -59,11 +59,19 @@ func (vm *VM) Run() {
 			vm.stack = vm.stack[:sp-1]
 			vm.pc++
 
+		case "print":
+			sp := len(vm.stack)
+			arg1 := vm.stack[sp-1]
+			fmt.Println(arg1)
+			vm.stack = vm.stack[:sp-1]
+
 		}
 		vm.pc++
-		fmt.Print("Stack:")
-		fmt.Println(vm.stack)
-		fmt.Print("Symbol table:")
-		fmt.Println(vm.st)
+		/*
+			fmt.Print("Stack:")
+			fmt.Println(vm.stack)
+			fmt.Print("Symbol table:")
+			fmt.Println(vm.st)
+		*/
 	}
 }

@@ -10,6 +10,7 @@ const (
 	LET   = "LET"
 	IDENT = "IDENT"
 	INT   = "INT"
+	PRINT = "PRINT"
 
 	// OPERADORES
 	EQ        = "="
