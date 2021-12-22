@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"nand2tetris-go/compiler/token"
+	"nand2tetris-go/token"
 	"testing"
 )
 

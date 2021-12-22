@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"nand2tetris-go/compiler/token"
+	"nand2tetris-go/token"
 )
 
 type Lexer struct {
