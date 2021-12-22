@@ -19,7 +19,7 @@ func Run(filename string) {
 		gen := gen.New()
 		p := parser.New(string(input), gen)
 		p.Parse()
-		vm := vm.New(gen.Instructions())
+		vm := vm.New(gen.Instructions(), vm.NewEnvironment())
 		vm.Run()
 	} else {
 		vm := vm.Open(filename)

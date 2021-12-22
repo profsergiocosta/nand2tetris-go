@@ -4,6 +4,8 @@ import (
 	"flag"
 	"nand2tetris-go/compiler"
 	"nand2tetris-go/interpret"
+	"nand2tetris-go/repl"
+	"os"
 )
 
 func main() {
@@ -13,12 +15,12 @@ func main() {
 
 	flag.Parse()
 
-	fileName := *input
-
 	if *mode == "compiler" {
-		compiler.Compile(fileName)
+		compiler.Compile(*input)
+	} else if *mode == "it" {
+		repl.Start(os.Stdin, os.Stdout)
 	} else {
-		interpret.Run(fileName)
+		interpret.Run(*input)
 	}
 
 }

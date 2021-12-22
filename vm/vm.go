@@ -9,21 +9,27 @@ import (
 	"strings"
 )
 
+type Environment map[string]int
+
 type VM struct {
 	pc           int
 	stack        []int
-	st           map[string]int
+	environment  map[string]int
 	instructions []string
 }
 
-func New(inst []string) *VM {
-	return &VM{pc: 0, stack: nil, st: make(map[string]int), instructions: inst}
+func NewEnvironment() Environment {
+	return make(Environment)
+}
+
+func New(inst []string, env Environment) *VM {
+	return &VM{pc: 0, stack: nil, environment: env, instructions: inst}
 }
 
 func Open(filename string) *VM {
 	dat, _ := ioutil.ReadFile(filename)
 	instructions := strings.Split(string(dat), "\n")
-	return New(instructions)
+	return New(instructions, NewEnvironment())
 }
 
 func (vm *VM) stackPop() int {
@@ -56,7 +62,7 @@ func (vm *VM) Run() {
 			nextInst := vm.instructions[vm.pc+1]
 			arg, err := strconv.Atoi(nextInst)
 			if err != nil { // é uma variavel
-				arg = vm.st[nextInst]
+				arg = vm.environment[nextInst]
 			}
 			vm.stackPush(arg)
 			vm.pc++
@@ -72,7 +78,7 @@ func (vm *VM) Run() {
 
 		case "pop":
 			arg := vm.instructions[vm.pc+1]
-			vm.st[arg] = vm.stackPop()
+			vm.environment[arg] = vm.stackPop()
 			vm.pc++
 
 		case "print":

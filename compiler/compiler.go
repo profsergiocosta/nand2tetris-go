@@ -30,7 +30,7 @@ func Compile(inputPath string) {
 		p := parser.New(string(input), g)
 		p.Parse()
 
-		vm := vm.New(g.Instructions())
+		vm := vm.New(g.Instructions(), vm.NewEnvironment())
 		vm.Save(outputPath)
 
 	} else {
