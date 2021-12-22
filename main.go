@@ -1,22 +1,24 @@
 package main
 
 import (
-	"nand2tetris-go/parser"
-	"nand2tetris-go/vm"
-	"os"
-	"path"
+	"flag"
+	"nand2tetris-go/compiler"
+	"nand2tetris-go/interpret"
 )
 
 func main() {
 
-	fileName := os.Args[1]
-	//parser.Interpret(fileName)
-	ext := path.Ext(fileName)
-	if ext == ".jack" {
-		parser.Compile(fileName)
+	mode := flag.String("mode", "interpreter", "a string")
+	input := flag.String("input", "", "a string")
+
+	flag.Parse()
+
+	fileName := *input
+
+	if *mode == "compiler" {
+		compiler.Compile(fileName)
 	} else {
-		//vm.Interpret(fileName)
-		vm.Translator(fileName)
+		interpret.Run(fileName)
 	}
 
 }
