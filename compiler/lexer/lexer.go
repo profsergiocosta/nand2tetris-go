@@ -1,124 +1,108 @@
 package lexer
 
 import (
-	"fmt"
 	"nand2tetris-go/compiler/token"
 )
 
 type Lexer struct {
-	input    string
-	position int
-	start    int
+	input   string
+	current int
+	start   int
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input, position: 0, start: 0}
+	l := &Lexer{input: input, current: 0, start: 0}
 	return l
 }
 
 func (l *Lexer) NextToken() token.Token {
 
 	l.skipWhitespace()
+	l.start = l.current
 
-	l.start = l.position
+	if l.isAtEnd() {
+		return l.makeToken(token.EOF)
+	}
 
-	ch := l.peekChar()
+	ch := l.peek()
+
+	if token.IsDigit(ch) {
+		return l.number()
+	}
+
+	if token.IsLetter(ch) {
+		return l.identifier()
+	}
 
 	switch ch {
 	case '=':
-		return token.Token{Type: token.EQ, Lexeme: string(l.nextChar())}
+		l.advance()
+		return l.makeToken(token.EQ)
 	case '+':
-		return token.Token{Type: token.PLUS, Lexeme: string(l.nextChar())}
+		l.advance()
+		return l.makeToken(token.PLUS)
 	case '*':
-		return token.Token{Type: token.ASTERISK, Lexeme: string(l.nextChar())}
+		l.advance()
+		return l.makeToken(token.ASTERISK)
 	case ';':
-		return token.Token{Type: token.SEMICOLON, Lexeme: string(l.nextChar())}
-
-	case 0:
-		return token.Token{Type: token.EOF, Lexeme: ""}
+		l.advance()
+		return l.makeToken(token.SEMICOLON)
 
 	default:
-		if token.IsDigit(ch) {
-			return l.readInt()
-		} else if token.IsLetter(ch) {
-			return l.readIdentifier()
-		} else {
-			fmt.Println(ch)
-			return token.Token{Type: token.ILLEGAL, Lexeme: string(l.nextChar())}
-		}
-
+		l.advance()
+		return l.makeToken(token.ILLEGAL)
 	}
 
 }
 
+func (l *Lexer) isAtEnd() bool {
+	return l.peek() == 0
+}
+
 func (l *Lexer) makeToken(ttype token.TokenType) token.Token {
-	lexeme := l.input[l.start:l.position]
+	lexeme := l.input[l.start:l.current]
 	return token.Token{Lexeme: lexeme, Type: ttype}
 
 }
 
-func (l *Lexer) readInt() token.Token {
-	//var tok token.Token
-	//tok.Type = token.INT
-
-	//position := l.position
-	for token.IsDigit(l.peekChar()) {
-		l.nextChar()
+func (l *Lexer) number() token.Token {
+	for token.IsDigit(l.peek()) {
+		l.advance()
 	}
-	//lexeme := l.input[position:l.position]
-	//tok.Lexeme = lexeme
-
-	//return tok
 	return l.makeToken(token.INT)
 }
 
-func (l *Lexer) readIdentifier() token.Token {
-	//var tok token.Token
+func (l *Lexer) identifier() token.Token {
 
-	//position := l.position
-
-	for token.IsLetter(l.peekChar()) || token.IsDigit(l.peekChar()) || l.peekChar() == '_' {
-		l.nextChar()
+	for token.IsLetter(l.peek()) || token.IsDigit(l.peek()) || l.peek() == '_' {
+		l.advance()
 	}
-
-	//lexeme := l.input[position:l.position]
-	/*
-		if lexeme == "let" {
-			tok.Type = token.LET
-		} else if lexeme == "print" {
-			tok.Type = token.PRINT
-		} else {
-			tok.Type = token.IDENT
-		}
-		tok.Lexeme = lexeme
-		return tok
-	*/
 	tok := l.makeToken(token.IDENT)
 	tok.Type = token.LookupIdent(tok.Lexeme)
 
 	return tok
 }
 
-func (l *Lexer) peekChar() byte {
-	if l.position >= len(l.input) {
+func (l *Lexer) peek() byte {
+	if l.current >= len(l.input) {
 		return 0
 	} else {
-		return l.input[l.position]
+		return l.input[l.current]
 	}
 }
 
-func (l *Lexer) nextChar() byte {
-	ch := l.peekChar()
+func (l *Lexer) advance() byte {
+	ch := l.peek()
 	if ch != 0 {
-		l.position++
+		l.current++
 	}
 	return ch
 }
 
 func (l *Lexer) skipWhitespace() {
-	ch := l.peekChar()
+	ch := l.peek()
 	for ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
-		l.nextChar()
-		ch = l.peekChar()
+		l.advance()
+		ch = l.peek()
 	}
 }
