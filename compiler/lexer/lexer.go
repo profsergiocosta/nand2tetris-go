@@ -8,16 +8,19 @@ import (
 type Lexer struct {
 	input    string
 	position int
+	start    int
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input, position: 0}
+	l := &Lexer{input: input, position: 0, start: 0}
 	return l
 }
 
 func (l *Lexer) NextToken() token.Token {
 
 	l.skipWhitespace()
+
+	l.start = l.position
 
 	ch := l.peekChar()
 
@@ -48,37 +51,51 @@ func (l *Lexer) NextToken() token.Token {
 
 }
 
-func (l *Lexer) readInt() token.Token {
-	var tok token.Token
-	tok.Type = token.INT
+func (l *Lexer) makeToken(ttype token.TokenType) token.Token {
+	lexeme := l.input[l.start:l.position]
+	return token.Token{Lexeme: lexeme, Type: ttype}
 
-	position := l.position
+}
+
+func (l *Lexer) readInt() token.Token {
+	//var tok token.Token
+	//tok.Type = token.INT
+
+	//position := l.position
 	for token.IsDigit(l.peekChar()) {
 		l.nextChar()
 	}
-	lexeme := l.input[position:l.position]
-	tok.Lexeme = lexeme
+	//lexeme := l.input[position:l.position]
+	//tok.Lexeme = lexeme
 
-	return tok
+	//return tok
+	return l.makeToken(token.INT)
 }
 
 func (l *Lexer) readIdentifier() token.Token {
-	var tok token.Token
+	//var tok token.Token
 
-	position := l.position
+	//position := l.position
 
 	for token.IsLetter(l.peekChar()) || token.IsDigit(l.peekChar()) || l.peekChar() == '_' {
 		l.nextChar()
 	}
-	lexeme := l.input[position:l.position]
-	if lexeme == "let" {
-		tok.Type = token.LET
-	} else if lexeme == "print" {
-		tok.Type = token.PRINT
-	} else {
-		tok.Type = token.IDENT
-	}
-	tok.Lexeme = lexeme
+
+	//lexeme := l.input[position:l.position]
+	/*
+		if lexeme == "let" {
+			tok.Type = token.LET
+		} else if lexeme == "print" {
+			tok.Type = token.PRINT
+		} else {
+			tok.Type = token.IDENT
+		}
+		tok.Lexeme = lexeme
+		return tok
+	*/
+	tok := l.makeToken(token.IDENT)
+	tok.Type = token.LookupIdent(tok.Lexeme)
+
 	return tok
 }
 

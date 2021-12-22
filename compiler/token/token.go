@@ -19,9 +19,21 @@ const (
 	SEMICOLON = ";"
 )
 
+var keywords = map[string]TokenType{
+	"let":   LET,
+	"print": PRINT,
+}
+
 type Token struct {
 	Type   TokenType
 	Lexeme string
+}
+
+func LookupIdent(ident string) TokenType {
+	if tok, ok := keywords[ident]; ok {
+		return tok
+	}
+	return IDENT
 }
 
 func IsLetter(ch byte) bool {
