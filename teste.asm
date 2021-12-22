@@ -1,25 +1,29 @@
-
-@10 // push constant 10
+@SP
+@256
+D=A
+@SP
+M=D
+@10
 D=A
 @SP
 A=M
 M=D
 @SP
 M=M+1
-@SP // pop static 0
+@SP
 M=M-1
 A=M
 D=M
 @x
 M=D
-@x // push static 0
+@x
 D=M
 @SP
 A=M
 M=D
 @SP
 M=M+1
-@5 // push constant 5
+@5
 D=A
 @SP
 A=M
@@ -31,9 +35,19 @@ AM=M-1
 D=M
 A=A-1
 M=D+M
-@SP // pop static 1
+@SP
 M=M-1
 A=M
 D=M
 @y
 M=D
+@y
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+(LOOP)
+@LOOP
+0;JMP

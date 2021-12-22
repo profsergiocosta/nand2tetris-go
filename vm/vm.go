@@ -1,8 +1,10 @@
 package vm
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -15,102 +17,13 @@ type VM struct {
 }
 
 func New(inst []string) *VM {
-
 	return &VM{pc: 0, stack: nil, st: make(map[string]int), instructions: inst}
 }
 
-func Interpret(path string) {
-	dat, _ := ioutil.ReadFile(path)
+func Open(filename string) *VM {
+	dat, _ := ioutil.ReadFile(filename)
 	instructions := strings.Split(string(dat), "\n")
-	vm := New(instructions)
-	vm.Run()
-}
-
-func writePush(value string) {
-	arg, err := strconv.Atoi(value)
-	if err != nil { // é uma variavel
-		fmt.Println("@" + value)
-		fmt.Println("D=M")
-		fmt.Println("@SP")
-		fmt.Println("A=M")
-		fmt.Println("M=D")
-		fmt.Println("@SP")
-		fmt.Println("M=M+1")
-	} else {
-		fmt.Println(fmt.Sprintf("@%d", arg))
-		fmt.Println("D=A")
-		fmt.Println("@SP")
-		fmt.Println("A=M")
-		fmt.Println("M=D")
-		fmt.Println("@SP")
-		fmt.Println("M=M+1")
-	}
-
-}
-
-func writeAdd() {
-	fmt.Println("@SP // add")
-	fmt.Println("AM=M-1")
-	fmt.Println("D=M")
-	fmt.Println("A=A-1")
-	fmt.Println("M=D+M")
-
-}
-
-func writePop(varname string) {
-	fmt.Println("@SP")
-	fmt.Println("M=M-1")
-	fmt.Println("A=M")
-	fmt.Println("D=M")
-	fmt.Println("@" + varname)
-	fmt.Println("M=D")
-}
-
-func writeInit() {
-	fmt.Println("@SP")
-	fmt.Println("@256")
-	fmt.Println("D=A")
-	fmt.Println("@SP")
-	fmt.Println("M=D")
-}
-
-func writeHalt() {
-	fmt.Println("(LOOP)")
-	fmt.Println("@LOOP")
-	fmt.Println("0;JMP")
-}
-
-func Translator(path string) {
-	dat, _ := ioutil.ReadFile(path)
-	instructions := strings.Split(string(dat), "\n")
-	vm := New(instructions)
-	writeInit()
-	for vm.pc < len(vm.instructions) {
-		inst := vm.instructions[vm.pc]
-		switch inst {
-		case "push":
-			nextInst := vm.instructions[vm.pc+1]
-			writePush(nextInst)
-			vm.pc++
-
-		case "add", "mul":
-			if inst == "add" {
-				writeAdd()
-			} else {
-				// não tem implementacao
-			}
-
-		case "pop":
-			arg := vm.instructions[vm.pc+1]
-			writePop(arg)
-			vm.pc++
-
-		case "print":
-			//
-		}
-		vm.pc++
-	}
-	writeHalt()
+	return New(instructions)
 }
 
 func (vm *VM) stackPop() int {
@@ -122,6 +35,17 @@ func (vm *VM) stackPop() int {
 
 func (vm *VM) stackPush(value int) {
 	vm.stack = append(vm.stack, value)
+}
+
+func (vm *VM) Save(outputPath string) {
+	f, _ := os.Create(outputPath)
+	w := bufio.NewWriter(f)
+
+	for _, inst := range vm.instructions {
+		w.WriteString(fmt.Sprintf("%s\n", inst))
+	}
+	w.Flush()
+	f.Close()
 }
 
 func (vm *VM) Run() {
@@ -155,11 +79,5 @@ func (vm *VM) Run() {
 			fmt.Println(vm.stackPop())
 		}
 		vm.pc++
-		/*
-			fmt.Print("Stack:")
-			fmt.Println(vm.stack)
-			fmt.Print("Symbol table:")
-			fmt.Println(vm.st)
-		*/
 	}
 }
