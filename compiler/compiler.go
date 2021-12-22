@@ -18,7 +18,6 @@ func Compile(inputPath string) {
 
 	ext := path.Ext(inputPath)
 	if ext == ".jack" {
-
 		outputPath := FilenameWithoutExtension(inputPath) + ".vm"
 
 		input, err := ioutil.ReadFile(inputPath)

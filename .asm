@@ -1,0 +1,8 @@
+@SP
+@256
+D=A
+@SP
+M=D
+(LOOP)
+@LOOP
+0;JMP
