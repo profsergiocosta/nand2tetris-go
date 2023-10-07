@@ -11,4 +11,9 @@ go run . -input teste.jack
 
 go run . -mode interpreter -input teste.vm
 
- go run . -mode it
+go run . -mode it
+
+go run . -mode compiler -input teste.vm
+
+
+go run . -mode compiler -input teste.jack
